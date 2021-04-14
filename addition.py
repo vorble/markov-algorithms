@@ -14,6 +14,7 @@
 
 import sys
 import re
+import markov
 
 rules = [
     # Left-shuttle digits across digits with <
@@ -68,25 +69,9 @@ rules = [
     ('2', '10'),
 ]
 
-def findNextRule(rules, data):
-    for (match, replace) in rules:
-        index = data.find(match)
-        if index >= 0:
-            return (match, index, replace)
-    return None, None, None
-
-def runRules(data):
-    while True:
-        print(data)
-        match, index, replace = findNextRule(rules, data)
-        if match is None:
-            break
-        data = data[:index] + replace + data[index + len(match):]
-    print()
-
 for data in sys.argv[1:]:
     if re.compile('^[01]+\+[01]+=$').match(data):
-        runRules(data)
+        markov.animate(rules, data)
     else:
         print('Bad Input: ' + data)
-        print()
+    print()
