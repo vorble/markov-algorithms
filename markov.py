@@ -10,10 +10,12 @@ class MarkovAlgorithm(object):
         self._rules = rules
 
     def _findNextRule(self, data):
-        for (match, replace) in self._rules:
+        for (match, replace, *extra) in self._rules:
+            if len(extra) > 0:
+                terminal = True
             index = data.find(match)
             if index >= 0:
-                return (match, index, replace)
+                return match, index, replace, terminal
         return None, None, None
 
     def start(self, data):
@@ -23,18 +25,26 @@ class MarkovAlgorithmRun(object):
     def __init__(self, alg, data):
         self._alg = alg
         self.data = data
+        self.done = False
 
     def step(self):
-        match, index, replace = self._alg._findNextRule(self.data)
+        if self.done:
+            return False
+        match, index, replace, terminal = self._alg._findNextRule(self.data)
         if match is None:
             return False
         self.data = self.data[:index] + replace + self.data[index + len(match):]
+        if terminal:
+            self.done = True
         return True
 
     def finish(self):
         while self.step():
             pass
         return self.data
+
+def TerminalRule(match, replace):
+    return (match, replace, None)
 
 def run(rules, data):
     return MarkovAlgorithm(rules).start(data).finish()
@@ -60,4 +70,3 @@ def animate(rules, data):
             break
     print()
     return result.data
-
