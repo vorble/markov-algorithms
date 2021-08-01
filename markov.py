@@ -11,12 +11,13 @@ class MarkovAlgorithm(object):
 
     def _findNextRule(self, data):
         for (match, replace, *extra) in self._rules:
+            terminal = False
             if len(extra) > 0:
                 terminal = True
             index = data.find(match)
             if index >= 0:
                 return match, index, replace, terminal
-        return None, None, None
+        return None, None, None, None
 
     def start(self, data):
         return MarkovAlgorithmRun(self, data)
